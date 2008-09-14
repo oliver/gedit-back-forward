@@ -36,7 +36,8 @@ class History:
     nextSteps = []
 
     def addNewStep (self, lastStep):
-        print "addNewStep"
+        print "addNewStep (row: %d; col: %d)" % (lastStep.textIter.get_line(), lastStep.textIter.get_line_offset())
+        print lastStep.doc.get_uri()
         self.lastSteps.append(lastStep)
         self.nextSteps = []
 
@@ -68,6 +69,8 @@ class History:
 class Step:
     doc = None
     textIter = None
+    lineNo = None
+    colNo = None
 
 
 class BFWindowHelper:
@@ -117,13 +120,14 @@ class BFWindowHelper:
         self._btnForward.set_sensitive(False)
 
     def onTabAdded (self, tab):
+        print "onTabAdded"
         tab.get_view().connect_object("button-press-event", BFWindowHelper.onButtonPress, self, tab)
+        self._addNewStep()
         return False
-        pass
 
     def onButtonPress (self, event, tab):
         print "onButtonPress"
-        self._addNewStep(tab)
+        self._addNewStep()
         return False
 
     def _getCurrentStep (self):
@@ -135,9 +139,11 @@ class BFWindowHelper:
         step = Step()
         step.doc = tab.get_document()
         step.textIter = insertIter
+        step.lineNo = insertIter.get_line()
+        step.colNo = insertIter.get_line_offset()
         return step
 
-    def _addNewStep (self, tab):
+    def _addNewStep (self):
         print "adding new step"
 
         step = self._getCurrentStep()
@@ -150,11 +156,13 @@ class BFWindowHelper:
     def on_back_button_activate (self, action):
         print "(back)"
         step = self._history.goBack( self._getCurrentStep() )
-        print "step: line %d col %d" % (step.textIter.get_line(), step.textIter.get_line_offset())
+        print "step: line %d col %d" % (step.lineNo, step.colNo)
         self._btnBack.set_sensitive( self._history.canGoBack() )
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
-        step.doc.place_cursor(step.textIter)
+        newIter = step.doc.get_iter_at_line_offset(step.lineNo, step.colNo)
+        step.doc.place_cursor(newIter)
+
         self._window.set_active_tab(gedit.tab_get_from_document(step.doc))
         view = gedit.tab_get_from_document(step.doc).get_view()
         view.scroll_to_cursor()
@@ -162,11 +170,13 @@ class BFWindowHelper:
     def on_forward_button_activate (self, action):
         print "(forward)"
         step = self._history.goForward( self._getCurrentStep() )
-        print "step: line %d col %d" % (step.textIter.get_line(), step.textIter.get_line_offset())
+        print "step: line %d col %d" % (step.lineNo, step.colNo)
         self._btnBack.set_sensitive( self._history.canGoBack() )
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
-        step.doc.place_cursor(step.textIter)
+        newIter = step.doc.get_iter_at_line_offset(step.lineNo, step.colNo)
+        step.doc.place_cursor(newIter)
+
         self._window.set_active_tab(gedit.tab_get_from_document(step.doc))
         view = gedit.tab_get_from_document(step.doc).get_view()
         view.scroll_to_cursor()
