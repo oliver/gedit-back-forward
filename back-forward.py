@@ -24,6 +24,7 @@ class BFWindowHelper:
     def __init__(self, plugin, window):
         print "back-forward: plugin created for", window
         self._window = window
+        self._plugin = plugin
 
     def deactivate(self):
         print "back-forward: plugin stopped for", self._window
