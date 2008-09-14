@@ -1,0 +1,10 @@
+Gedit plugin to go to last/next document
+=========================================
+It should add two toolbar buttons: back and forward. The Back button goes to the "last position" in the last document; the forward button can be used to "undo" this (as seen in Visual Studio).
+In addition, maybe a "Go to last edit position" button might be useful as well (as seen in KDevelop).
+
+What should be a separate "history entry":
+- switching to another document, or opening a document
+- clicking somewhere in the document, thereby moving the cursor
+- moving the cursor with keyboard, and starting to edit at least N lines away from last edit position (with N being something like "half a screen height")
+- probably all cursor movements not initiated by the user should be counted as separate history entries (this should catch cursor movement initiated by plugins)
