@@ -18,6 +18,17 @@
 
 import os
 import gedit
+import gtk
+
+
+ui_str = """<ui>
+  <toolbar name="ToolBar">
+    <separator />
+      <toolitem name="BackButton" action="BackButton"/>
+      <toolitem name="ForwardButton" action="ForwardButton"/>
+  </toolbar>
+</ui>
+"""
 
 
 class BFWindowHelper:
@@ -26,12 +37,42 @@ class BFWindowHelper:
         self._window = window
         self._plugin = plugin
 
+        self._insert_toolbar_buttons()
+
     def deactivate(self):
         print "back-forward: plugin stopped for", self._window
 
     def update_ui(self):
         print "back-forward: plugin update for", self._window
 
+    def _insert_toolbar_buttons (self):
+        # Get the GtkUIManager
+        manager = self._window.get_ui_manager()
+
+        # Create a new action group
+        self._action_group = gtk.ActionGroup("BFPluginActions")
+        self._action_group.add_actions([
+            ("BackButton", "gtk-go-back", _("Back"),
+                "", _("Go to last edit position"),
+                self.on_back_button_activate),
+            ("ForwardButton", "gtk-go-forward", _("Forward"),
+                "", _("Go to next edit position"),
+                self.on_forward_button_activate)
+        ])
+
+        # Insert the action group
+        manager.insert_action_group(self._action_group, -1)
+
+        # Merge the UI
+        self._ui_id = manager.add_ui_from_string(ui_str)
+
+    def on_back_button_activate (self, action):
+        print "(back)"
+        pass
+
+    def on_forward_button_activate (self, action):
+        print "(forward)"
+        pass
 
 class BackForwardPlugin(gedit.Plugin):
     def __init__(self):
