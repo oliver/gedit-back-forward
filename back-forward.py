@@ -54,6 +54,12 @@ class History:
         else:
             return True
 
+
+class Step:
+    doc = None
+    textIter = None
+
+
 class BFWindowHelper:
     def __init__(self, plugin, window):
         print "back-forward: plugin created for", window
@@ -105,25 +111,37 @@ class BFWindowHelper:
         pass
 
     def onButtonPress (self, event, tab):
-        self._addNewStep()
+        self._addNewStep(tab)
         pass
 
-    def _addNewStep (self):
+    def _addNewStep (self, tab):
         print "adding new step"
-        self._history.addNewStep("abc")
+
+        insertMark = tab.get_document().get_insert()
+        insertIter = tab.get_document().get_iter_at_mark(insertMark)
+
+        step = Step()
+        step.doc = tab.get_document()
+        step.textIter = insertIter
+
+        self._history.addNewStep(step)
         self._btnBack.set_sensitive(True)
 
 
     def on_back_button_activate (self, action):
         print "(back)"
         step = self._history.goBack()
-        print "step: %s" % step
+        print "step: line %d col %d" % (step.textIter.get_line(), step.textIter.get_line_offset())
         self._btnBack.set_sensitive( self._history.canGoBack() )
+
+        step.doc.place_cursor(step.textIter)
+
         pass
 
     def on_forward_button_activate (self, action):
         print "(forward)"
         pass
+
 
 class BackForwardPlugin(gedit.Plugin):
     def __init__(self):
