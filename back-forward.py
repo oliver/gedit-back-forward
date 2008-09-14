@@ -77,8 +77,6 @@ class BFWindowHelper:
         self._plugin = plugin
 
         self._history = History()
-        #self._recordNextMovement = False
-
         self._lastCursorPos = None
 
         self._insert_toolbar_buttons()
@@ -128,19 +126,13 @@ class BFWindowHelper:
     def onButtonPress (self, event, tab):
         print "onButtonPress"
         self._addNewStep(tab)
-        #self._recordNextMovement = True
         return False
-        pass
 
     def onCursorMoved (self, tab):
         print "cursor moved"
 
         insertMark = tab.get_document().get_insert()
         self._lastCursorPos = tab.get_document().get_iter_at_mark(insertMark)
-
-        #if self._recordNextMovement:
-            #self._addNewStep(tab)
-            #self._recordNextMovement = False
         return False
 
     def _getCurrentStep (self):
@@ -161,12 +153,8 @@ class BFWindowHelper:
             print "ignoring last step (None)"
             return
 
-        #insertMark = tab.get_document().get_insert()
-        #insertIter = tab.get_document().get_iter_at_mark(insertMark)
-
         step = Step()
         step.doc = tab.get_document()
-        #step.textIter = insertIter
         step.textIter = self._lastCursorPos
 
         self._history.addNewStep(step)
