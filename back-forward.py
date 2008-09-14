@@ -155,6 +155,8 @@ class BFWindowHelper:
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
         step.doc.place_cursor(step.textIter)
+        view = gedit.tab_get_from_document(step.doc).get_view()
+        view.scroll_to_cursor()
 
     def on_forward_button_activate (self, action):
         print "(forward)"
@@ -164,6 +166,8 @@ class BFWindowHelper:
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
         step.doc.place_cursor(step.textIter)
+        view = gedit.tab_get_from_document(step.doc).get_view()
+        view.scroll_to_cursor()
 
 
 class BackForwardPlugin(gedit.Plugin):
