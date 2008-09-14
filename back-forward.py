@@ -155,6 +155,7 @@ class BFWindowHelper:
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
         step.doc.place_cursor(step.textIter)
+        self._window.set_active_tab(gedit.tab_get_from_document(step.doc))
         view = gedit.tab_get_from_document(step.doc).get_view()
         view.scroll_to_cursor()
 
@@ -166,6 +167,7 @@ class BFWindowHelper:
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
         step.doc.place_cursor(step.textIter)
+        self._window.set_active_tab(gedit.tab_get_from_document(step.doc))
         view = gedit.tab_get_from_document(step.doc).get_view()
         view.scroll_to_cursor()
 
