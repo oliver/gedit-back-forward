@@ -153,9 +153,7 @@ class BFWindowHelper:
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
 
-    def on_back_button_activate (self, action):
-        print "(back)"
-        step = self._history.goBack( self._getCurrentStep() )
+    def _restoreStep (self, step):
         print "step: line %d col %d" % (step.lineNo, step.colNo)
         self._btnBack.set_sensitive( self._history.canGoBack() )
         self._btnForward.set_sensitive( self._history.canGoForward() )
@@ -166,20 +164,16 @@ class BFWindowHelper:
         self._window.set_active_tab(gedit.tab_get_from_document(step.doc))
         view = gedit.tab_get_from_document(step.doc).get_view()
         view.scroll_to_cursor()
+
+    def on_back_button_activate (self, action):
+        print "(back)"
+        step = self._history.goBack( self._getCurrentStep() )
+        self._restoreStep(step)
 
     def on_forward_button_activate (self, action):
         print "(forward)"
         step = self._history.goForward( self._getCurrentStep() )
-        print "step: line %d col %d" % (step.lineNo, step.colNo)
-        self._btnBack.set_sensitive( self._history.canGoBack() )
-        self._btnForward.set_sensitive( self._history.canGoForward() )
-
-        newIter = step.doc.get_iter_at_line_offset(step.lineNo, step.colNo)
-        step.doc.place_cursor(newIter)
-
-        self._window.set_active_tab(gedit.tab_get_from_document(step.doc))
-        view = gedit.tab_get_from_document(step.doc).get_view()
-        view.scroll_to_cursor()
+        self._restoreStep(step)
 
 
 class BackForwardPlugin(gedit.Plugin):
