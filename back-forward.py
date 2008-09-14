@@ -35,21 +35,21 @@ class History:
     lastSteps = []
     nextSteps = []
 
-    def addNewStep (self, step):
+    def addNewStep (self, lastStep):
         print "addNewStep"
-        self.lastSteps.append(step)
+        self.lastSteps.append(lastStep)
         self.nextSteps = []
 
-    def goBack (self):
+    def goBack (self, currStep):
         if not(self.canGoBack()):
             return None
-        self.nextSteps.insert(0, self.lastSteps[-1])
+        self.nextSteps.insert(0, currStep)
         return self.lastSteps.pop()
 
-    def goForward (self):
+    def goForward (self, currStep):
         if not(self.canGoForward()):
             return None
-        self.lastSteps.append(self.nextSteps[0])
+        self.lastSteps.append(currStep)
         return self.nextSteps.pop(0)
 
     def canGoBack (self):
@@ -143,6 +143,17 @@ class BFWindowHelper:
             #self._recordNextMovement = False
         return False
 
+    def _getCurrentStep (self):
+        tab = self._window.get_active_tab()
+
+        insertMark = tab.get_document().get_insert()
+        insertIter = tab.get_document().get_iter_at_mark(insertMark)
+
+        step = Step()
+        step.doc = tab.get_document()
+        step.textIter = insertIter
+        return step
+
     def _addNewStep (self, tab):
         print "adding new step"
 
@@ -165,7 +176,7 @@ class BFWindowHelper:
 
     def on_back_button_activate (self, action):
         print "(back)"
-        step = self._history.goBack()
+        step = self._history.goBack( self._getCurrentStep() )
         print "step: line %d col %d" % (step.textIter.get_line(), step.textIter.get_line_offset())
         self._btnBack.set_sensitive( self._history.canGoBack() )
         self._btnForward.set_sensitive( self._history.canGoForward() )
@@ -174,7 +185,7 @@ class BFWindowHelper:
 
     def on_forward_button_activate (self, action):
         print "(forward)"
-        step = self._history.goForward()
+        step = self._history.goForward( self._getCurrentStep() )
         print "step: line %d col %d" % (step.textIter.get_line(), step.textIter.get_line_offset())
         self._btnBack.set_sensitive( self._history.canGoBack() )
         self._btnForward.set_sensitive( self._history.canGoForward() )
