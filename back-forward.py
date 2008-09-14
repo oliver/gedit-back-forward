@@ -31,13 +31,40 @@ ui_str = """<ui>
 """
 
 
+class History:
+    lastSteps = []
+    nextSteps = []
+
+    def addNewStep (self, step):
+        self.lastSteps.append(step)
+        self.nextSteps = []
+
+    def goBack (self):
+        if not(self.canGoBack()):
+            return None
+        self.nextSteps.insert(0, self.lastSteps[-1])
+        return self.lastSteps.pop()
+
+    def goForward (self):
+        return None
+
+    def canGoBack (self):
+        if len(self.lastSteps) == 0:
+            return False
+        else:
+            return True
+
 class BFWindowHelper:
     def __init__(self, plugin, window):
         print "back-forward: plugin created for", window
         self._window = window
         self._plugin = plugin
 
+        self._history = History()
+
         self._insert_toolbar_buttons()
+
+        self._window.connect_object("tab-added", BFWindowHelper.onTabAdded, self)
 
     def deactivate(self):
         print "back-forward: plugin stopped for", self._window
@@ -66,8 +93,32 @@ class BFWindowHelper:
         # Merge the UI
         self._ui_id = manager.add_ui_from_string(ui_str)
 
+        self._btnBack = manager.get_action("/ToolBar/BackButton")
+        self._btnForward = manager.get_action("/ToolBar/ForwardButton")
+
+        # disable toolbar buttons
+        self._btnBack.set_sensitive(False)
+        self._btnForward.set_sensitive(False)
+
+    def onTabAdded (self, tab):
+        tab.get_view().connect_object("button-press-event", BFWindowHelper.onButtonPress, self, tab)
+        pass
+
+    def onButtonPress (self, event, tab):
+        self._addNewStep()
+        pass
+
+    def _addNewStep (self):
+        print "adding new step"
+        self._history.addNewStep("abc")
+        self._btnBack.set_sensitive(True)
+
+
     def on_back_button_activate (self, action):
         print "(back)"
+        step = self._history.goBack()
+        print "step: %s" % step
+        self._btnBack.set_sensitive( self._history.canGoBack() )
         pass
 
     def on_forward_button_activate (self, action):
