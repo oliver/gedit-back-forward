@@ -36,6 +36,7 @@ class History:
     nextSteps = []
 
     def addNewStep (self, step):
+        print "addNewStep"
         self.lastSteps.append(step)
         self.nextSteps = []
 
@@ -46,10 +47,19 @@ class History:
         return self.lastSteps.pop()
 
     def goForward (self):
-        return None
+        if not(self.canGoForward()):
+            return None
+        self.lastSteps.append(self.nextSteps[0])
+        return self.nextSteps.pop(0)
 
     def canGoBack (self):
         if len(self.lastSteps) == 0:
+            return False
+        else:
+            return True
+
+    def canGoForward (self):
+        if len(self.nextSteps) == 0:
             return False
         else:
             return True
@@ -67,6 +77,9 @@ class BFWindowHelper:
         self._plugin = plugin
 
         self._history = History()
+        #self._recordNextMovement = False
+
+        self._lastCursorPos = None
 
         self._insert_toolbar_buttons()
 
@@ -108,24 +121,46 @@ class BFWindowHelper:
 
     def onTabAdded (self, tab):
         tab.get_view().connect_object("button-press-event", BFWindowHelper.onButtonPress, self, tab)
+        tab.get_document().connect_object("cursor-moved", BFWindowHelper.onCursorMoved, self, tab)
+        return False
         pass
 
     def onButtonPress (self, event, tab):
+        print "onButtonPress"
         self._addNewStep(tab)
+        #self._recordNextMovement = True
+        return False
         pass
+
+    def onCursorMoved (self, tab):
+        print "cursor moved"
+
+        insertMark = tab.get_document().get_insert()
+        self._lastCursorPos = tab.get_document().get_iter_at_mark(insertMark)
+
+        #if self._recordNextMovement:
+            #self._addNewStep(tab)
+            #self._recordNextMovement = False
+        return False
 
     def _addNewStep (self, tab):
         print "adding new step"
 
-        insertMark = tab.get_document().get_insert()
-        insertIter = tab.get_document().get_iter_at_mark(insertMark)
+        if self._lastCursorPos == None:
+            print "ignoring last step (None)"
+            return
+
+        #insertMark = tab.get_document().get_insert()
+        #insertIter = tab.get_document().get_iter_at_mark(insertMark)
 
         step = Step()
         step.doc = tab.get_document()
-        step.textIter = insertIter
+        #step.textIter = insertIter
+        step.textIter = self._lastCursorPos
 
         self._history.addNewStep(step)
         self._btnBack.set_sensitive(True)
+        self._btnForward.set_sensitive( self._history.canGoForward() )
 
 
     def on_back_button_activate (self, action):
@@ -133,14 +168,18 @@ class BFWindowHelper:
         step = self._history.goBack()
         print "step: line %d col %d" % (step.textIter.get_line(), step.textIter.get_line_offset())
         self._btnBack.set_sensitive( self._history.canGoBack() )
+        self._btnForward.set_sensitive( self._history.canGoForward() )
 
         step.doc.place_cursor(step.textIter)
 
-        pass
-
     def on_forward_button_activate (self, action):
         print "(forward)"
-        pass
+        step = self._history.goForward()
+        print "step: line %d col %d" % (step.textIter.get_line(), step.textIter.get_line_offset())
+        self._btnBack.set_sensitive( self._history.canGoBack() )
+        self._btnForward.set_sensitive( self._history.canGoForward() )
+
+        step.doc.place_cursor(step.textIter)
 
 
 class BackForwardPlugin(gedit.Plugin):
