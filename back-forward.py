@@ -78,6 +78,7 @@ class BFWindowHelper:
         print "back-forward: plugin created for", window
         self._window = window
         self._plugin = plugin
+        self.handlers = [] # list of (object, handlerId) tuples, for deactivate() method
 
         self._history = History()
 
@@ -88,10 +89,16 @@ class BFWindowHelper:
             tab = gedit.tab_get_from_document(doc)
             self.onTabAdded(tab)
 
-        self._window.connect_object("tab-added", BFWindowHelper.onTabAdded, self)
+        handler = self._window.connect_object("tab-added", BFWindowHelper.onTabAdded, self)
+        self.handlers.append( (self._window, handler) )
+
 
     def deactivate(self):
         print "back-forward: plugin stopped for", self._window
+        # unregister all of our GTK handlers:
+        for (obj, handler) in self.handlers:
+            obj.disconnect(handler)
+        self.handlers = []
 
     def update_ui(self):
         print "back-forward: plugin update for", self._window
@@ -126,7 +133,8 @@ class BFWindowHelper:
 
     def onTabAdded (self, tab):
         print "onTabAdded"
-        tab.get_view().connect_object("button-press-event", BFWindowHelper.onButtonPress, self, tab)
+        handler = tab.get_view().connect_object("button-press-event", BFWindowHelper.onButtonPress, self, tab)
+        self.handlers.append( (tab.get_view(), handler) )
         self._addNewStep()
         return False
 
