@@ -95,6 +95,8 @@ class BFWindowHelper:
 
     def deactivate(self):
         print "back-forward: plugin stopped for", self._window
+        self._remove_menu()
+
         # unregister all of our GTK handlers:
         for (obj, handler) in self.handlers:
             obj.disconnect(handler)
@@ -130,6 +132,13 @@ class BFWindowHelper:
         # disable toolbar buttons
         self._btnBack.set_sensitive(False)
         self._btnForward.set_sensitive(False)
+
+    def _remove_menu(self):
+        # remove toolbar buttons
+        manager = self._window.get_ui_manager()
+        manager.remove_ui(self._ui_id)
+        manager.remove_action_group(self._action_group)
+        manager.ensure_update()
 
     def onTabAdded (self, tab):
         print "onTabAdded"
