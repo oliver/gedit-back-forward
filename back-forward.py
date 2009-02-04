@@ -83,6 +83,11 @@ class BFWindowHelper:
 
         self._insert_toolbar_buttons()
 
+        # register button-press handlers for all existing tabs
+        for doc in self._window.get_documents():
+            tab = gedit.tab_get_from_document(doc)
+            self.onTabAdded(tab)
+
         self._window.connect_object("tab-added", BFWindowHelper.onTabAdded, self)
 
     def deactivate(self):
