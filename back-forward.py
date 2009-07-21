@@ -38,7 +38,7 @@ class History:
         self.nextSteps = []
 
     def addNewStep (self, lastStep):
-        print "addNewStep (row: %d; col: %d)" % (lastStep.textIter.get_line(), lastStep.textIter.get_line_offset())
+        print "addNewStep (doc: %s; row: %d; col: %d)" % (lastStep.doc.get_uri(), lastStep.textIter.get_line(), lastStep.textIter.get_line_offset())
         print lastStep.doc.get_uri()
         self.lastSteps.append(lastStep)
         self.nextSteps = []
@@ -187,7 +187,7 @@ class BFWindowHelper:
 
 
     def _restoreStep (self, step):
-        print "step: line %d col %d" % (step.lineNo, step.colNo)
+        print "going to step: %s line %d col %d" % (step.doc.get_uri(), step.lineNo, step.colNo)
         self._btnBack.set_sensitive( self._history.canGoBack() )
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
