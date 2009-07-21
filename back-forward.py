@@ -102,6 +102,11 @@ class BFWindowHelper:
             obj.disconnect(handler)
         self.handlers = []
 
+        self._history = None
+
+        self._window = None
+        self._plugin = None
+
     def update_ui(self):
         print "back-forward: plugin update for", self._window
 
@@ -139,6 +144,10 @@ class BFWindowHelper:
         manager.remove_ui(self._ui_id)
         manager.remove_action_group(self._action_group)
         manager.ensure_update()
+
+        self._btnBack = None
+        self._btnForward = None
+        self._ui_id = None
 
     def onTabAdded (self, tab):
         print "onTabAdded"
