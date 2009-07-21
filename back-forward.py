@@ -32,8 +32,10 @@ ui_str = """<ui>
 
 
 class History:
-    lastSteps = []
-    nextSteps = []
+
+    def __init__ (self):
+        self.lastSteps = []
+        self.nextSteps = []
 
     def addNewStep (self, lastStep):
         print "addNewStep (row: %d; col: %d)" % (lastStep.textIter.get_line(), lastStep.textIter.get_line_offset())
