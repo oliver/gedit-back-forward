@@ -180,6 +180,9 @@ class BFWindowHelper:
         print "adding new step"
 
         step = self._getCurrentStep()
+        if step.doc.get_uri() == None:
+            print "(not adding new step, as doc.get_uri() is None)"
+            return
 
         self._history.addNewStep(step)
         self._btnBack.set_sensitive(True)
