@@ -40,12 +40,32 @@ class History:
     def addNewStep (self, lastStep):
         print "addNewStep (doc: %s; row: %d; col: %d)" % (lastStep.doc.get_uri(), lastStep.textIter.get_line(), lastStep.textIter.get_line_offset())
         print lastStep.doc.get_uri()
-        self.lastSteps.append(lastStep)
+
+        prevStep = self.getPrevStep()
+        if prevStep != None and lastStep.doc == prevStep.doc and lastStep.lineNo == prevStep.lineNo:
+            print "(overwriting previous step, as line and doc are the same)"
+            self.lastSteps[-1] = lastStep
+        else:
+            self.lastSteps.append(lastStep)
+
         self.nextSteps = []
+
+    def getPrevStep (self):
+        if not(self.canGoBack()):
+            return None
+        else:
+            return self.lastSteps[-1]
 
     def goBack (self, currStep):
         if not(self.canGoBack()):
             return None
+
+        prevStep = self.getPrevStep()
+        if prevStep != None and currStep.doc == prevStep.doc and currStep.lineNo == prevStep.lineNo:
+            print "(overwriting previous step while going back, as line and doc are the same)"
+            self.lastSteps.pop()
+
+
         self.nextSteps.insert(0, currStep)
         return self.lastSteps.pop()
 
