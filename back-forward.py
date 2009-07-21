@@ -205,7 +205,7 @@ class BFWindowHelper:
             return
 
         self._history.addNewStep(step)
-        self._btnBack.set_sensitive(True)
+        self._btnBack.set_sensitive( self._history.canGoBack() )
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
 
