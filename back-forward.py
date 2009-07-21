@@ -61,7 +61,7 @@ class History:
             return None
 
         prevStep = self.getPrevStep()
-        if prevStep != None and currStep.doc == prevStep.doc and currStep.lineNo == prevStep.lineNo:
+        if prevStep != None and len(self.lastSteps) >= 2 and currStep.doc == prevStep.doc and currStep.lineNo == prevStep.lineNo:
             print "(overwriting previous step while going back, as line and doc are the same)"
             self.lastSteps.pop()
 
