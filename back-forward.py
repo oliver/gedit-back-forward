@@ -86,6 +86,16 @@ class History:
         self.lastSteps.append(currStep)
         return self.nextSteps.pop(0)
 
+    def goSteps (self, numSteps, currStep):
+        if numSteps < 0:
+            func = self.goBack
+        elif numSteps > 0:
+            func = self.goForward
+
+        for i in range(0, abs(numSteps)):
+            currStep = func(currStep)
+        return currStep
+
     def canGoBack (self):
         if len(self.lastSteps) == 0:
             return False
@@ -173,6 +183,36 @@ class BFWindowHelper:
         # disable toolbar buttons
         self._btnBack.set_sensitive(False)
         self._btnForward.set_sensitive(False)
+
+        self._btnBack.get_proxies()[0].set_menu(gtk.Menu())
+        self._btnForward.get_proxies()[0].set_menu(gtk.Menu())
+
+        self._btnBack.get_proxies()[0].connect_object("show-menu", BFWindowHelper._on_show_menu,
+            self, self._btnBack.get_proxies()[0].get_menu(), -1)
+        self._btnForward.get_proxies()[0].connect_object("show-menu", BFWindowHelper._on_show_menu,
+            self, self._btnForward.get_proxies()[0].get_menu(), 1)
+
+    def _on_show_menu (self, menu, direction):
+        for mi in menu.get_children():
+            menu.remove(mi)
+
+        if direction < 0:
+            steps = reversed(self._history.lastSteps)
+        elif direction > 0:
+            steps = self._history.nextSteps
+
+        i = 1
+        for step in steps:
+            text = "%s (%d)" % (step.doc.get_short_name_for_display(), step.lineNo+1)
+            mi = gtk.MenuItem(text, use_underline=False)
+            mi.connect_object("activate", self._on_history_item_activate, i * direction)
+            menu.append(mi)
+            i+=1
+        menu.show_all()
+
+    def _on_history_item_activate (self, numSteps):
+        newStep = self._history.goSteps(numSteps, self._getCurrentStep())
+        self._restoreStep(newStep)
 
     def _remove_menu(self):
         # remove toolbar buttons
