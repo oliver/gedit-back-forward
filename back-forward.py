@@ -49,12 +49,12 @@ class History:
         self.nextSteps = []
 
     def addNewStep (self, lastStep):
-        print "addNewStep (doc: %s; row: %d; col: %d)" % (lastStep.doc.get_uri(), lastStep.textIter.get_line(), lastStep.textIter.get_line_offset())
-        print lastStep.doc.get_uri()
+        #print "addNewStep (doc: %s; row: %d; col: %d)" % (lastStep.doc.get_uri(), lastStep.textIter.get_line(), lastStep.textIter.get_line_offset())
+        #print lastStep.doc.get_uri()
 
         prevStep = self.getPrevStep()
         if prevStep != None and lastStep.doc == prevStep.doc and lastStep.lineNo == prevStep.lineNo:
-            print "(overwriting previous step, as line and doc are the same)"
+            #print "(overwriting previous step, as line and doc are the same)"
             self.lastSteps[-1] = lastStep
         else:
             self.lastSteps.append(lastStep)
@@ -73,7 +73,7 @@ class History:
 
         prevStep = self.getPrevStep()
         if prevStep != None and len(self.lastSteps) >= 2 and currStep.doc == prevStep.doc and currStep.lineNo == prevStep.lineNo:
-            print "(overwriting previous step while going back, as line and doc are the same)"
+            #print "(overwriting previous step while going back, as line and doc are the same)"
             self.lastSteps.pop()
 
 
@@ -118,7 +118,7 @@ class Step:
 
 class BFWindowHelper:
     def __init__(self, plugin, window):
-        print "back-forward: plugin created for", window
+        #print "back-forward: plugin created for", window
         self._window = window
         self._plugin = plugin
         self.handlers = [] # list of (object, handlerId) tuples, for deactivate() method
@@ -137,7 +137,7 @@ class BFWindowHelper:
 
 
     def deactivate(self):
-        print "back-forward: plugin stopped for", self._window
+        #print "back-forward: plugin stopped for", self._window
         self._remove_menu()
 
         # unregister all of our GTK handlers:
@@ -151,7 +151,8 @@ class BFWindowHelper:
         self._plugin = None
 
     def update_ui(self):
-        print "back-forward: plugin update for", self._window
+        #print "back-forward: plugin update for", self._window
+        pass
 
     def _insert_toolbar_buttons (self):
         # Get the GtkUIManager
@@ -226,14 +227,14 @@ class BFWindowHelper:
         self._ui_id = None
 
     def onTabAdded (self, tab):
-        print "onTabAdded"
+        #print "onTabAdded"
         handler = tab.get_view().connect_object("button-press-event", BFWindowHelper.onButtonPress, self, tab)
         self.handlers.append( (tab.get_view(), handler) )
         self._addNewStep()
         return False
 
     def onButtonPress (self, event, tab):
-        print "onButtonPress"
+        #print "onButtonPress"
         self._addNewStep()
         return False
 
@@ -251,11 +252,11 @@ class BFWindowHelper:
         return step
 
     def _addNewStep (self):
-        print "adding new step"
+        #print "adding new step"
 
         step = self._getCurrentStep()
         if step.doc.get_uri() == None:
-            print "(not adding new step, as doc.get_uri() is None)"
+            #print "(not adding new step, as doc.get_uri() is None)"
             return
 
         self._history.addNewStep(step)
@@ -264,7 +265,7 @@ class BFWindowHelper:
 
 
     def _restoreStep (self, step):
-        print "going to step: %s line %d col %d" % (step.doc.get_uri(), step.lineNo, step.colNo)
+        #print "going to step: %s line %d col %d" % (step.doc.get_uri(), step.lineNo, step.colNo)
         self._btnBack.set_sensitive( self._history.canGoBack() )
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
@@ -276,12 +277,12 @@ class BFWindowHelper:
         view.scroll_to_cursor()
 
     def on_back_button_activate (self, action):
-        print "(back)"
+        #print "(back)"
         step = self._history.goBack( self._getCurrentStep() )
         self._restoreStep(step)
 
     def on_forward_button_activate (self, action):
-        print "(forward)"
+        #print "(forward)"
         step = self._history.goForward( self._getCurrentStep() )
         self._restoreStep(step)
 
