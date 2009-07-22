@@ -19,6 +19,7 @@
 import os
 import gedit
 import gtk
+import gobject
 
 
 ui_str = """<ui>
@@ -29,6 +30,16 @@ ui_str = """<ui>
   </toolbar>
 </ui>
 """
+
+
+# create gtk.MenuToolButton class for UIManager
+# as decribed at http://www.pygtk.org/docs/pygtk/class-gtkaction.html#method-gtkaction--set-tool-item-type
+
+class BFPlugin_MenuToolAction(gtk.Action):
+    __gtype_name__ = "BFPlugin_MenuToolAction"
+
+gobject.type_register(BFPlugin_MenuToolAction)
+BFPlugin_MenuToolAction.set_tool_item_type(gtk.MenuToolButton)
 
 
 class History:
@@ -138,14 +149,17 @@ class BFWindowHelper:
 
         # Create a new action group
         self._action_group = gtk.ActionGroup("BFPluginActions")
-        self._action_group.add_actions([
-            ("BackButton", "gtk-go-back", _("Back"),
-                "", _("Go to last edit position"),
-                self.on_back_button_activate),
-            ("ForwardButton", "gtk-go-forward", _("Forward"),
-                "", _("Go to next edit position"),
-                self.on_forward_button_activate)
-        ])
+
+        backAction = BFPlugin_MenuToolAction("BackButton", _("Back"),
+            _("Go to last edit position"), "gtk-go-back")
+        backAction.connect_object("activate", self.on_back_button_activate, self)
+        self._action_group.add_action(backAction)
+
+        forwardAction = BFPlugin_MenuToolAction("ForwardButton", _("Forward"),
+            _("Go to next edit position"), "gtk-go-forward")
+        forwardAction.connect_object("activate", self.on_forward_button_activate, self)
+        self._action_group.add_action(forwardAction)
+
 
         # Insert the action group
         manager.insert_action_group(self._action_group, -1)
