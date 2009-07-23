@@ -55,7 +55,7 @@ class History:
         #print lastStep.doc.get_uri()
 
         prevStep = self.getPrevStep()
-        if prevStep != None and lastStep.doc == prevStep.doc and lastStep.lineNo == prevStep.lineNo:
+        if prevStep != None and lastStep.isSimilar(prevStep):
             #print "(overwriting previous step, as line and doc are the same)"
             self.lastSteps[-1] = lastStep
         else:
@@ -77,7 +77,7 @@ class History:
             return None
 
         prevStep = self.getPrevStep()
-        if prevStep != None and len(self.lastSteps) >= 2 and currStep.doc == prevStep.doc and currStep.lineNo == prevStep.lineNo:
+        if prevStep != None and len(self.lastSteps) >= 2 and currStep.isSimilar(prevStep):
             #print "(overwriting previous step while going back, as line and doc are the same)"
             self.lastSteps.pop()
 
@@ -119,6 +119,13 @@ class Step:
     textIter = None
     lineNo = None
     colNo = None
+
+    def isSimilar (self, rhs):
+        "Returns true if two Steps are similar enough to be treated as one Step"
+        if self.doc == rhs.doc and self.lineNo == rhs.lineNo:
+            return True
+        else:
+            return False
 
 
 class BFWindowHelper:
