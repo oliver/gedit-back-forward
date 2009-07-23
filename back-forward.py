@@ -43,6 +43,7 @@ BFPlugin_MenuToolAction.set_tool_item_type(gtk.MenuToolButton)
 
 
 maxHistoryLength = 100
+minLineDistance = 100
 
 class History:
 
@@ -122,7 +123,7 @@ class Step:
 
     def isSimilar (self, rhs):
         "Returns true if two Steps are similar enough to be treated as one Step"
-        if self.doc == rhs.doc and self.lineNo == rhs.lineNo:
+        if self.doc == rhs.doc and abs(self.lineNo - rhs.lineNo) < minLineDistance:
             return True
         else:
             return False
