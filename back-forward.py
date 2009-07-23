@@ -42,6 +42,8 @@ gobject.type_register(BFPlugin_MenuToolAction)
 BFPlugin_MenuToolAction.set_tool_item_type(gtk.MenuToolButton)
 
 
+maxHistoryLength = 100
+
 class History:
 
     def __init__ (self):
@@ -58,6 +60,9 @@ class History:
             self.lastSteps[-1] = lastStep
         else:
             self.lastSteps.append(lastStep)
+
+        if len(self.lastSteps) > maxHistoryLength:
+            self.lastSteps = self.lastSteps[-maxHistoryLength:]
 
         self.nextSteps = []
 
