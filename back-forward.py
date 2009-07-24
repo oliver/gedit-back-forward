@@ -295,7 +295,10 @@ class BFWindowHelper:
         self._btnBack.set_sensitive( self._history.canGoBack() )
         self._btnForward.set_sensitive( self._history.canGoForward() )
 
-        newIter = step.doc.get_iter_at_line_offset(step.lineNo, step.colNo)
+        newIter = step.doc.get_iter_at_line(step.lineNo)
+        targetCol = min(step.colNo, newIter.get_chars_in_line() -1)
+        newIter.forward_chars(targetCol)
+
         step.doc.place_cursor(newIter)
 
         self._window.set_active_tab(gedit.tab_get_from_document(step.doc))
