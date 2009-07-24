@@ -171,18 +171,25 @@ class BFWindowHelper:
         # Get the GtkUIManager
         manager = self._window.get_ui_manager()
 
+        accelGroup = gtk.AccelGroup()
+        self._window.add_accel_group(accelGroup)
+
         # Create a new action group
         self._action_group = gtk.ActionGroup("BFPluginActions")
 
         backAction = BFPlugin_MenuToolAction("BackButton", _("Back"),
             _("Go to last edit position"), "gtk-go-back")
         backAction.connect_object("activate", self.on_back_button_activate, self)
-        self._action_group.add_action(backAction)
+        self._action_group.add_action_with_accel(backAction, '<Alt>Left')
+        backAction.set_accel_group(accelGroup)
+        backAction.connect_accelerator()
 
         forwardAction = BFPlugin_MenuToolAction("ForwardButton", _("Forward"),
             _("Go to next edit position"), "gtk-go-forward")
         forwardAction.connect_object("activate", self.on_forward_button_activate, self)
-        self._action_group.add_action(forwardAction)
+        self._action_group.add_action_with_accel(forwardAction, '<Alt>Right')
+        forwardAction.set_accel_group(accelGroup)
+        forwardAction.connect_accelerator()
 
 
         # Insert the action group
