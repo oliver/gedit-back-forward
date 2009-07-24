@@ -251,6 +251,7 @@ class BFWindowHelper:
         self._btnBack = None
         self._btnForward = None
         self._ui_id = None
+        self._action_group = None
 
     def onTabAdded (self, tab):
         #print "onTabAdded"
