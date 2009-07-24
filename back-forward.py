@@ -127,6 +127,9 @@ class Step:
             return True
         else:
             return False
+            
+    def ToPrettyString (self):
+        return "%s (%d)" % (self.doc.get_short_name_for_display(), self.lineNo+1)
 
 
 class BFWindowHelper:
@@ -228,8 +231,7 @@ class BFWindowHelper:
 
         i = 1
         for step in steps:
-            text = "%s (%d)" % (step.doc.get_short_name_for_display(), step.lineNo+1)
-            mi = gtk.MenuItem(text, use_underline=False)
+            mi = gtk.MenuItem(step.ToPrettyString(), use_underline=False)
             mi.connect_object("activate", self._on_history_item_activate, i * direction)
             menu.append(mi)
             i+=1
