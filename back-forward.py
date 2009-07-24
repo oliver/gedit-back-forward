@@ -1,5 +1,5 @@
 #    Gedit back/forward buttons plugin
-#    Copyright (C) 2008  Oliver Gerlich <oliver.gerlich@gmx.de>
+#    Copyright (C) 2008-2009  Oliver Gerlich <oliver.gerlich@gmx.de>
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
